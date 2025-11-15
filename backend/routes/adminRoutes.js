@@ -8,9 +8,6 @@ const ADMIN = {
   password: "Rajaumer@123",
 };
 
-// JWT secret key - use environment variable in production
-
-// 👉 Only login route
 adminrouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;

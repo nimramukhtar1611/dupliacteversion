@@ -2,13 +2,15 @@
 import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import axiosInstance from '../libs/axios'
+import emailjs from "@emailjs/browser";
+
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -19,19 +21,28 @@ const ContactForm = () => {
     e.preventDefault();
     setLoading(true);
 
-  
-  try {
-    const res = await axiosInstance.post("/contact", formData);
-    
-    alert(res.data.message);
-    setFormData({ name: '', email: '', message: '' });
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong! Please try again.");
+    emailjs
+      .send(
+        "service_mneithg",
+        "template_6zruvgt",
+        {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        },
+        "G2Y15w5IrFuJLLCiu"
+      )
+      .then(() => {
+        alert("Message sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Something went wrong. Please try again!");
+        setLoading(false);
+      });
   }
-
-  setLoading(false);
-}
 
   return (
     <>
@@ -91,4 +102,3 @@ const ContactForm = () => {
 }
 
 export default ContactForm
-

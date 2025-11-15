@@ -5,7 +5,6 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import clientRoutes from "./routes/clientRoutes.js"
-import contactRoutes from "./routes/contactRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -25,7 +24,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/clients", clientRoutes);
-app.use("/api/contact", contactRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running...");

@@ -35,9 +35,8 @@ const LoginPage = () => {
     router.push("/clientdashboard");
 
   } catch (err) {
-    console.error("Login error:", err);
     // agar backend se message mile
-    setError(err.response?.data?.message || "Something went wrong! Please try again.");
+    setError( "this user doesnot exist");
   } finally {
     setIsLoading(false);
   }

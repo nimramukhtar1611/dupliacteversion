@@ -2,6 +2,8 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import farmImg from '../../public/aboutimg.jpg' 
 import Footer from '../components/Footer'
+import Image from 'next/image';
+
 const AboutUs = () => {
   return (
     <>
@@ -11,11 +13,14 @@ const AboutUs = () => {
           
           {/* Left Side Image */}
           <div className="w-full md:w-1/3 flex justify-center">
-            <img 
-              src={farmImg.src} 
-              alt="Farm" 
-              className="rounded-lg shadow-lg w-78 h-78 object-cover"
-            />
+           <Image
+  src={farmImg}
+  alt="Farm"
+  width={400}      
+  height={400}
+  className="rounded-lg shadow-lg object-cover"
+ />
+
           </div>
 
           {/* Right Side Text */}

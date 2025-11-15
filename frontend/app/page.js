@@ -2,16 +2,20 @@ import React from 'react'
 import Navbar from './components/Navbar'
 import img from '../public/farm.jpg'
 import Footer from './components/Footer'
+import Image from 'next/image';
+
 const Page = () => {
   return (
     <div>
       <Navbar />
   <div className="w-full h-[400px] md:h-[600px] relative">
-  <img
-    src={img.src}
-    alt="Farm"
-    className="w-full h-full object-cover"
-  />
+  <Image
+          src="/farm.jpg"    
+          alt="Farm"
+          fill
+          priority            
+          className="object-cover"
+        />
   
   <div className="absolute inset-0 bg-black/30"></div> 
 

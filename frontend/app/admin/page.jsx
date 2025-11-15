@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axiosInstance from "../libs/axios";
 import { useRouter } from "next/navigation"; 
 
 const AdminLogin = () => {
@@ -11,48 +12,33 @@ const AdminLogin = () => {
   
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear errors when user starts typing
     if (error) setError("");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError("");
+  setSuccess("");
 
-    try {
-      // 1️⃣ Login request to backend
-      const res = await fetch("http://localhost:5000/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      
-      const data = await res.json();
+  try {
+    const { data } = await axiosInstance.post("/admin/login", formData);
 
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        setIsLoading(false);
-        return;
-      }
+    // Store token and admin data
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("admindata", JSON.stringify(data.admin || data.client));
 
-      // Store data in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("admindata", JSON.stringify(data.admin || data.client));
-      
-      console.log("Login successful, admin data:", data.admin || data.client);
-      
-      // Use router.push instead of window.location.href
-      router.push("/dashboard");
-      
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Something went wrong! Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    console.log("Login successful:", data.admin || data.client);
+    setSuccess("Login successful!");
+
+    router.push("/dashboard");
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(err.response?.data?.message || "Something went wrong! Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

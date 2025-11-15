@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import { useState, useEffect } from 'react';
+import axiosInstance from './axiosInstance';
 
 const AdminDashboard = () => {
   const [clients, setClients] = useState([]);
@@ -25,10 +26,9 @@ const AdminDashboard = () => {
   // Fetch all clients
   const getClients = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/clients");
-      const data = await res.json();
-      setClients(data);
-      setFilteredClients(data);
+      const res = await axiosInstance.get("/clients");
+      setClients(res.data);
+      setFilteredClients(res.data);
     } catch (error) {
       console.error("Error fetching clients:", error);
     }
@@ -37,9 +37,8 @@ const AdminDashboard = () => {
   // Fetch specific client's orders - SORT BY LATEST FIRST
   const getClientOrders = async (clientName) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/orders/${clientName}`);
-      const data = await res.json();
-      const orders = Array.isArray(data.orders) ? data.orders : [];
+      const res = await axiosInstance.get(`/clients/orders/${clientName}`);
+      const orders = Array.isArray(res.data.orders) ? res.data.orders : [];
       // SORT ORDERS - LATEST FIRST
       const sortedOrders = orders.sort((a, b) => new Date(b.date) - new Date(a.date));
       setClientOrders(sortedOrders);
@@ -116,50 +115,40 @@ const AdminDashboard = () => {
     if (currentView === "clientDetails" && selectedClient) {
       // Add new order
       try {
-        const res = await fetch("http://localhost:5000/api/clients/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: selectedClient.name,
-            password: selectedClient.password,
-            category: form.category,
-            kg: form.kg,
-            price: form.price,
-            currentRate: form.currentRate,
-            paid: form.paid, // NEW: Include paid amount
-            due: form.due    // NEW: Include due amount
-          }),
+        const res = await axiosInstance.post("/clients/add", {
+          name: selectedClient.name,
+          password: selectedClient.password,
+          category: form.category,
+          kg: form.kg,
+          price: form.price,
+          currentRate: form.currentRate,
+          paid: form.paid, // NEW: Include paid amount
+          due: form.due    // NEW: Include due amount
         });
-        const data = await res.json();
-        if (res.ok) {
+        if (res.status === 200) {
           alert("New order added successfully!");
           setForm({ name: "", password: "", category: "", kg: "", price: "", currentRate: "", paid: "", due: "" });
           getClients();
           closeModal("orderModal");
           getClientOrders(selectedClient.name);
-        } else alert(data.message);
+        } else alert(res.data.message);
       } catch (err) { 
         console.error(err); 
         alert("Something went wrong!"); 
       }
     } else {
       // Add new client
-      const endpoint = editingId ? `http://localhost:5000/api/clients/${editingId}` : "http://localhost:5000/api/clients/add";
-      const method = editingId ? "PUT" : "POST";
+      const endpoint = editingId ? `/clients/${editingId}` : "/clients/add";
+      const method = editingId ? "put" : "post";
       try {
-        const res = await fetch(endpoint, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert(data.message);
+        const res = await axiosInstance[method](endpoint, form);
+        if (res.status === 200) {
+          alert(res.data.message);
           setForm({ name: "", password: "", category: "", kg: "", price: "", currentRate: "", paid: "", due: "" });
           setEditingId(null);
           getClients();
           closeModal("formBox");
-        } else alert(data.message);
+        } else alert(res.data.message);
       } catch (err) { 
         console.error(err); 
         alert("Something went wrong!"); 
@@ -172,21 +161,16 @@ const AdminDashboard = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/order/${editingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category: form.category,
-          kg: form.kg,
-          price: form.price,
-          currentRate: form.currentRate,
-          paid: form.paid, // NEW: Include paid amount
-          due: form.due    // NEW: Include due amount
-        }),
+      const res = await axiosInstance.put(`/clients/order/${editingId}`, {
+        category: form.category,
+        kg: form.kg,
+        price: form.price,
+        currentRate: form.currentRate,
+        paid: form.paid, // NEW: Include paid amount
+        due: form.due    // NEW: Include due amount
       });
       
-      const data = await res.json();
-      if (res.ok) {
+      if (res.status === 200) {
         alert("Order updated successfully!");
         setForm({ name: "", password: "", category: "", kg: "", price: "", currentRate: "", paid: "", due: "" });
         setEditingId(null);
@@ -194,7 +178,7 @@ const AdminDashboard = () => {
         getClients();
         if (selectedClient) getClientOrders(selectedClient.name);
       } else {
-        alert(data.message);
+        alert(res.data.message);
       }
     } catch (err) { 
       console.error(err); 
@@ -221,11 +205,9 @@ const AdminDashboard = () => {
   const deleteOrder = async (orderId) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/clients/order/${orderId}`, { 
-        method: "DELETE" 
-      });
+      const res = await axiosInstance.delete(`/clients/order/${orderId}`);
       
-      if (res.ok) {
+      if (res.status === 200) {
         alert("Order deleted successfully!");
         getClients();
         if (selectedClient) getClientOrders(selectedClient.name);

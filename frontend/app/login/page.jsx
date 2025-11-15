@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useRouter } from 'next/navigation'
-
+import axiosInstance from '../libs/axios'
 const LoginPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -18,37 +18,31 @@ const LoginPage = () => {
     if (error) setError('')
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.username,
-          password: formData.password
-        }),
-      });
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
 
-      const data = await res.json();
-      
-      if (res.ok) {
-        localStorage.setItem("clientData", JSON.stringify(data.client));
-        console.log("Login successful, client data:", data.client);
-        router.push("/clientdashboard");
-      } else {
-        setError(data.message || "Login failed");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Something went wrong! Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    const { data } = await axiosInstance.post("/auth/login", {
+      name: formData.username,
+      password: formData.password
+    });
+
+    // agar login successful
+    localStorage.setItem("clientData", JSON.stringify(data.client));
+    console.log("Login successful, client data:", data.client);
+    router.push("/clientdashboard");
+
+  } catch (err) {
+    console.error("Login error:", err);
+    // agar backend se message mile
+    setError(err.response?.data?.message || "Something went wrong! Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>

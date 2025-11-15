@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import axiosInstance from "../libs/axios";
 const ClientDashboard = () => {
   const [client, setClient] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,40 +12,31 @@ const ClientDashboard = () => {
       const token = localStorage.getItem("token");
       const clientData = localStorage.getItem("clientData");
 
-      // Authentication check - agar token ya client data nahi hai toh login page par redirect
       if (!token || !clientData) {
         router.push("/login");
         return;
       }
 
-      try {
-        const parsedClientData = JSON.parse(clientData);
-        const response = await fetch(
-          `http://localhost:5000/api/clients/orders/${parsedClientData.name}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+     try {
+  const parsedClientData = JSON.parse(clientData);
 
-        if (response.status === 401) {
-          // Token expired ya invalid hai
-          localStorage.removeItem("token");
-          localStorage.removeItem("clientData");
-          router.push("/login");
-          return;
-        }
+  const response = await axiosInstance.get(
+    `/clients/orders/${parsedClientData.name}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
-        const data = await response.json();
-        setClient(data);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        // Error case mein bhi login par redirect karo
-        localStorage.removeItem("token");
-        localStorage.removeItem("clientData");
-        router.push("/login");
-      } finally {
-        setIsLoading(false);
-      }
+  const data = response.data; 
+  setClient(data);
+} catch (err) {
+  console.error("Error fetching data:", err);
+  localStorage.removeItem("token");
+  localStorage.removeItem("clientData");
+  router.push("/login");
+} finally {
+  setIsLoading(false);
+}
     };
 
     checkAuthAndFetchData();

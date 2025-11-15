@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-
+import axiosInstance from '../libs/axios'
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -19,23 +19,19 @@ const ContactForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:5000/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      alert(data.message);
-      setFormData({ name: '', email: '', message: '' });
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong! Please try again.");
-    }
-
-    setLoading(false);
+  
+  try {
+    const res = await axiosInstance.post("/contact", formData);
+    
+    alert(res.data.message);
+    setFormData({ name: '', email: '', message: '' });
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong! Please try again.");
   }
+
+  setLoading(false);
+}
 
   return (
     <>

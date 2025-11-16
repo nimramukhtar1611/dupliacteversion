@@ -10,13 +10,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://192.168.18.9:3000',
-    'https://noorpoultrytraders.shop'  ],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 // Routes

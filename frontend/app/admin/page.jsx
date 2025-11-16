@@ -50,7 +50,7 @@ const AdminLogin = () => {
           {/* Decorative Header */}
           <div className="bg-gradient-to-r from-gray-900 to-gray-700 py-6 px-8">
             <h2 className="text-2xl font-bold text-white text-center" style={{ fontFamily: "'Pacifico', cursive" }}>
-              Admin Portal
+              ADMIN PORTAL
             </h2>
             <p className="text-gray-300 text-center text-sm mt-2">Secure Access Only</p>
           </div>

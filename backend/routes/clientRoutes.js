@@ -15,7 +15,7 @@ clientrouter.get("/", getAllClients);
 clientrouter.get("/orders/:name", getClientOrders);
 clientrouter.delete("/order/:orderId", deleteOrder);
 clientrouter.delete("/:id", deleteClient);
-clientrouter.put("/order/:orderId", updateOrder); // Added this line
+clientrouter.put("/order/:orderId", updateOrder);
 
 
 export default clientrouter;

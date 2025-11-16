@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://noortrader.onrender.com/api", 
+  baseURL:  "https://dupliacteversion.vercel.app/api", 
   withCredentials: true,
 });
 

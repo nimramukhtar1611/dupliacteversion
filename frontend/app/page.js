@@ -10,7 +10,7 @@ const Page = () => {
       <Navbar />
   <div className="w-full h-[400px] md:h-[600px] relative">
   <Image
-          src="/farm.jpg"    
+          src={img}
           alt="Farm"
           fill
           priority            
